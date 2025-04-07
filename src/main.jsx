@@ -174,7 +174,7 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-6 relative">
+    <div className="min-h-screen bg-black text-white p-6 relative flex flex-col items-center justify-start">
       {/* DASHBOARD LOGO */}
       <img
         src="/dashboard-logo.png"
@@ -189,24 +189,22 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
         muted
         loop
         playsInline
-        className="w-full max-w-3xl mx-auto mb-10 rounded-lg shadow-lg"
+        className="w-full max-w-3xl mx-auto mb-8 rounded-lg shadow-lg"
       />
 
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-xl font-bold">$KARTEL Presale</h1>
-        <div className="flex items-center gap-4">
-          <ConnectButton />
-          <button
-            onClick={toggleAudio}
-            className="bg-white text-black px-3 py-1 rounded text-sm hover:bg-gray-300 transition"
-          >
-            {isPlaying ? 'Pause' : 'Play'} Music
-          </button>
-        </div>
+      {/* Connect + Audio Button (Centered) */}
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10 z-10">
+        <ConnectButton />
+        <button
+          onClick={toggleAudio}
+          className="bg-white text-black px-4 py-2 rounded text-sm hover:bg-gray-300 transition"
+        >
+          {isPlaying ? 'Pause' : 'Play'} Music
+        </button>
       </div>
 
       {isConnected ? (
-        <div className="max-w-md mx-auto space-y-6">
+        <div className="max-w-md w-full space-y-6">
           <div>
             <p className="text-sm text-gray-400">Wallet Address</p>
             <p className="break-all">{address}</p>
@@ -246,6 +244,7 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
     </div>
   )
 }
+
 
 
 // 🧠 APP ROOT
