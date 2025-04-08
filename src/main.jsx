@@ -105,7 +105,17 @@ const PasswordGate = ({ onAccess, startMusic }) => {
   }
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center text-white px-4 overflow-hidden">
+
+    <div
+  className="relative min-h-screen flex flex-col items-center justify-center text-white px-4 overflow-hidden"
+  style={{
+    backgroundImage: "url('/entry-desert-suvs.png')",
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  }}
+>
+
       {/* Explosions */}
       <div
         ref={cashExplosionRef}
