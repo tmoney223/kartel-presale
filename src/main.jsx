@@ -18,7 +18,7 @@ import { mainnet } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import Particles from 'react-tsparticles'
 
-// ✅ PARTICLES COMPONENT
+// ✅ PARTICLES BACKGROUND (used in PasswordGate only)
 const ParticlesBackground = () => {
   const particlesOptions = useMemo(() => ({
     fullScreen: { enable: true, zIndex: -1 },
@@ -73,7 +73,7 @@ const wagmiClient = createClient({
   provider
 })
 
-// 🔐 ENTRY SCREEN
+// 🔐 PASSWORD ENTRY
 const PasswordGate = ({ onAccess, startMusic }) => {
   const [input, setInput] = useState('')
   const [error, setError] = useState(false)
@@ -114,7 +114,7 @@ const PasswordGate = ({ onAccess, startMusic }) => {
         backgroundRepeat: 'no-repeat',
       }}
     >
-      {/* Particles (bricks + cash) */}
+      {/* Floating particles ONLY on entry page */}
       <ParticlesBackground />
 
       {/* Explosions */}
@@ -129,7 +129,7 @@ const PasswordGate = ({ onAccess, startMusic }) => {
         style={{ backgroundImage: `url('/cocaine-brick.png')` }}
       />
 
-      {/* Logo with background */}
+      {/* Logo */}
       <div className="bg-black/70 border border-gray-600 p-4 rounded-xl mb-10 z-10">
         <img
           src={`${window.location.origin}/kartel-logo.png`}
@@ -187,19 +187,22 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
   }
 
   return (
-    <div
-      className="min-h-screen text-white p-6 relative"
-      style={{
-        backgroundImage: "url('/dashboard-background.png')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}
-    >
+    <div className="min-h-screen text-white p-6 relative overflow-hidden">
+      {/* DASHBOARD BACKGROUND IMAGE */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: "url('/dashboard-background.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
+
       <img
         src="/dashboard-logo.png"
         alt="Dashboard Logo"
-        className="w-[500px] mx-auto mb-6 z-10"
+        className="w-[500px] mx-auto mb-6 z-10 relative"
       />
 
       <video
@@ -208,10 +211,11 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
         muted
         loop
         playsInline
-        className="w-full max-w-3xl mx-auto mb-8 rounded-lg shadow-lg"
+        className="w-full max-w-3xl mx-auto mb-8 rounded-lg shadow-lg z-10 relative"
       />
 
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10 z-10">
+      {/* Connect + Audio Button */}
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10 z-10 relative">
         <ConnectButton />
         <button
           onClick={toggleAudio}
@@ -222,7 +226,7 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
       </div>
 
       {isConnected ? (
-        <div className="max-w-md w-full space-y-6">
+        <div className="max-w-md w-full space-y-6 z-10 relative">
           <div>
             <p className="text-sm text-gray-400">Wallet Address</p>
             <p className="break-all">{address}</p>
@@ -257,13 +261,13 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
           </div>
         </div>
       ) : (
-        <p className="text-center mt-10 text-gray-400">Connect your wallet to continue.</p>
+        <p className="text-center mt-10 text-gray-400 z-10">Connect your wallet to continue.</p>
       )}
     </div>
   )
 }
 
-// 🧠 ROOT APP
+// 🧠 APP ROOT
 const App = () => {
   const [access, setAccess] = useState(false)
   const audioRef = useRef(null)
