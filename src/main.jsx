@@ -174,7 +174,16 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-6 relative flex flex-col items-center justify-start">
+    <div
+  className="min-h-screen text-white p-6 relative"
+  style={{
+    backgroundImage: "url('/desert-background.png')",
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  }}
+>
+
       {/* DASHBOARD LOGO */}
       <img
         src="/dashboard-logo.png"
