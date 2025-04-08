@@ -18,7 +18,7 @@ import { mainnet } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import Particles from 'react-tsparticles'
 
-// ✅ PARTICLES BACKGROUND (used in PasswordGate only)
+// ✅ PARTICLES BACKGROUND (used on entry only)
 const ParticlesBackground = () => {
   const particlesOptions = useMemo(() => ({
     fullScreen: { enable: true, zIndex: -1 },
@@ -73,7 +73,7 @@ const wagmiClient = createClient({
   provider
 })
 
-// 🔐 PASSWORD ENTRY
+// 🔐 ENTRY PAGE
 const PasswordGate = ({ onAccess, startMusic }) => {
   const [input, setInput] = useState('')
   const [error, setError] = useState(false)
@@ -114,7 +114,7 @@ const PasswordGate = ({ onAccess, startMusic }) => {
         backgroundRepeat: 'no-repeat',
       }}
     >
-      {/* Floating particles ONLY on entry page */}
+      {/* Brick + Cash Particles */}
       <ParticlesBackground />
 
       {/* Explosions */}
@@ -166,7 +166,7 @@ const PasswordGate = ({ onAccess, startMusic }) => {
   )
 }
 
-// 💼 DASHBOARD
+// 💼 DASHBOARD PAGE
 const Dashboard = ({ toggleAudio, isPlaying }) => {
   const { address, isConnected } = useAccount()
   const { data: usdcBalance } = useBalance({
@@ -188,17 +188,18 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
 
   return (
     <div className="min-h-screen text-white p-6 relative overflow-hidden">
-      {/* DASHBOARD BACKGROUND IMAGE */}
+      {/* Background image layered under dashboard */}
       <div
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: "url('/dashboard-background.png')",
+          backgroundImage: "url('/desert-background.png')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
         }}
       />
 
+      {/* Logo + Video */}
       <img
         src="/dashboard-logo.png"
         alt="Dashboard Logo"
@@ -214,7 +215,7 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
         className="w-full max-w-3xl mx-auto mb-8 rounded-lg shadow-lg z-10 relative"
       />
 
-      {/* Connect + Audio Button */}
+      {/* Connect + Music Controls */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10 z-10 relative">
         <ConnectButton />
         <button
