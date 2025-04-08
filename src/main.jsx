@@ -166,41 +166,41 @@ const PasswordGate = ({ onAccess, startMusic }) => {
         style={{ backgroundImage: "url('/cocaine-brick.png')" }}
       />
 
-      {/* Logo w/ backdrop */}
-      <div className="bg-black/70 border border-gray-600 p-4 rounded-xl mb-10 z-30">
-        <img
-          src="/kartel-logo.png"
-          alt="KARTEL"
-          className={`w-[420px] sm:w-[540px] drop-shadow-2xl transition-all duration-[2000ms] ${
-            animateLogo
-              ? 'opacity-0 scale-125 blur-sm'
-              : 'animate-fade-in-slow animate-pulse'
-          }`}
-        />
-      </div>
+      {/* Logo + Form Combined in One Box */}
+<div className="bg-black/70 border border-gray-600 p-6 rounded-xl z-30 max-w-md w-full flex flex-col items-center">
+  <img
+    src="/kartel-logo.png"
+    alt="KARTEL"
+    className={`w-[420px] sm:w-[500px] drop-shadow-2xl mb-6 transition-all duration-[2000ms] ${
+      animateLogo
+        ? 'opacity-0 scale-125 blur-sm'
+        : 'animate-fade-in-slow animate-pulse'
+    }`}
+  />
 
-      {/* Form */}
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-4 w-full max-w-xs z-30"
-      >
-        <input
-          type="password"
-          placeholder="Enter Password"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="p-3 rounded bg-gray-800 border border-gray-600 text-white w-full"
-        />
-        <button
-          type="submit"
-          className="p-3 bg-green-600 rounded hover:bg-green-700 w-full"
-        >
-          Enter
-        </button>
-        {error && (
-          <p className="text-red-500 text-sm">Incorrect password. Try again.</p>
-        )}
-      </form>
+  <form
+    onSubmit={handleSubmit}
+    className="flex flex-col gap-4 w-full"
+  >
+    <input
+      type="password"
+      placeholder="Enter Password"
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+      className="p-3 rounded bg-gray-800 border border-gray-600 text-white w-full"
+    />
+    <button
+      type="submit"
+      className="p-3 bg-green-600 rounded hover:bg-green-700 w-full"
+    >
+      Enter
+    </button>
+    {error && (
+      <p className="text-red-500 text-sm text-center">Incorrect password. Try again.</p>
+    )}
+  </form>
+</div>
+
     </div>
   )
 }
