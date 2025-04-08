@@ -84,7 +84,7 @@ const PasswordGate = ({ onAccess, startMusic }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (input === 'kartel2024') {
+    if (input === 'freecoca') {
       if (cashExplosionRef.current) {
         cashExplosionRef.current.classList.add('explode')
         cashExplosionRef.current.style.opacity = 1
