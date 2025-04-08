@@ -18,7 +18,7 @@ import { mainnet } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import Particles from 'react-tsparticles'
 
-// ✅ PARTICLES BACKGROUND
+// ✅ PARTICLES COMPONENT
 const ParticlesBackground = () => {
   const particlesOptions = useMemo(() => ({
     fullScreen: { enable: true, zIndex: -1 },
@@ -73,7 +73,7 @@ const wagmiClient = createClient({
   provider
 })
 
-// 🔐 PASSWORD GATE
+// 🔐 ENTRY SCREEN
 const PasswordGate = ({ onAccess, startMusic }) => {
   const [input, setInput] = useState('')
   const [error, setError] = useState(false)
@@ -105,16 +105,17 @@ const PasswordGate = ({ onAccess, startMusic }) => {
   }
 
   return (
-
     <div
-  className="relative min-h-screen flex flex-col items-center justify-center text-white px-4 overflow-hidden"
-  style={{
-    backgroundImage: "url('/entry-desert-suvs.png')",
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-  }}
->
+      className="relative min-h-screen flex flex-col items-center justify-center text-white px-4 overflow-hidden"
+      style={{
+        backgroundImage: "url('/entry-desert-suvs.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Particles (bricks + cash) */}
+      <ParticlesBackground />
 
       {/* Explosions */}
       <div
@@ -128,16 +129,18 @@ const PasswordGate = ({ onAccess, startMusic }) => {
         style={{ backgroundImage: `url('/cocaine-brick.png')` }}
       />
 
-      {/* Logo */}
-      <img
-        src={`${window.location.origin}/kartel-logo.png`}
-        alt="KARTEL"
-        className={`w-[420px] sm:w-[540px] mb-10 drop-shadow-2xl z-10 transition-all duration-[2000ms] ${
-          animateLogo
-            ? 'opacity-0 scale-125 blur-sm'
-            : 'animate-fade-in-slow animate-pulse'
-        }`}
-      />
+      {/* Logo with background */}
+      <div className="bg-black/70 border border-gray-600 p-4 rounded-xl mb-10 z-10">
+        <img
+          src={`${window.location.origin}/kartel-logo.png`}
+          alt="KARTEL"
+          className={`w-[420px] sm:w-[540px] drop-shadow-2xl transition-all duration-[2000ms] ${
+            animateLogo
+              ? 'opacity-0 scale-125 blur-sm'
+              : 'animate-fade-in-slow animate-pulse'
+          }`}
+        />
+      </div>
 
       {/* Password Form */}
       <form
@@ -185,23 +188,20 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
 
   return (
     <div
-  className="min-h-screen text-white p-6 relative"
-  style={{
-    backgroundImage: "url('/desert-background.png')",
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-  }}
->
-
-      {/* DASHBOARD LOGO */}
+      className="min-h-screen text-white p-6 relative"
+      style={{
+        backgroundImage: "url('/dashboard-background.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       <img
         src="/dashboard-logo.png"
         alt="Dashboard Logo"
         className="w-[500px] mx-auto mb-6 z-10"
       />
 
-      {/* CARTEL VIDEO */}
       <video
         src="/cartel-intro.mp4"
         autoPlay
@@ -211,7 +211,6 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
         className="w-full max-w-3xl mx-auto mb-8 rounded-lg shadow-lg"
       />
 
-      {/* Connect + Audio Button (Centered) */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10 z-10">
         <ConnectButton />
         <button
@@ -264,9 +263,7 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
   )
 }
 
-
-
-// 🧠 APP ROOT
+// 🧠 ROOT APP
 const App = () => {
   const [access, setAccess] = useState(false)
   const audioRef = useRef(null)
@@ -290,7 +287,6 @@ const App = () => {
 
   return (
     <>
-      <ParticlesBackground />
       <audio ref={audioRef} src="/kartel-theme.mp3" preload="auto" loop />
       {access ? (
         <Dashboard toggleAudio={toggleAudio} isPlaying={isPlaying} />
