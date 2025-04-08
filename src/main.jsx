@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import '@rainbow-me/rainbowkit/styles.css'
@@ -17,46 +17,8 @@ import {
 import { mainnet } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import Particles from 'react-tsparticles'
-
-// ✅ ENTRY PARTICLES
-const ParticlesBackground = () => {
-  return (
-    <Particles
-      id="tsparticles"
-      className="absolute top-0 left-0 w-full h-full z-10"
-      init={async (main) => {
-        const { loadImageShape } = await import('tsparticles-shape-image')
-        const { loadFull } = await import('tsparticles')
-        await loadFull(main)
-        await loadImageShape(main)
-      }}
-      options={{
-        fullScreen: { enable: false },
-        background: { color: 'transparent' },
-        particles: {
-          number: { value: 40 },
-          shape: {
-            type: 'image',
-            image: [
-              { src: '/cocaine-brick.png', width: 32, height: 32 },
-              { src: '/money-stack.png', width: 32, height: 32 }
-            ]
-          },
-          size: { value: 36 },
-          move: {
-            enable: true,
-            speed: 1,
-            direction: 'none',
-            outModes: { default: 'bounce' }
-          },
-          opacity: { value: 1 }
-        },
-        detectRetina: true
-      }}
-    />
-  )
-}
-
+import { loadFull } from 'tsparticles'
+import { loadImageShape } from 'tsparticles-shape-image'
 
 // 🔧 WALLET CONFIG
 const { chains, provider } = configureChains([mainnet], [publicProvider()])
@@ -71,7 +33,47 @@ const wagmiClient = createClient({
   provider
 })
 
-// 🔐 ENTRY
+// ✅ PARTICLES BACKGROUND
+const ParticlesBackground = () => {
+  const particlesOptions = useMemo(() => ({
+    fullScreen: { enable: true, zIndex: -1 },
+    background: { color: '#000' },
+    interactivity: { events: { onClick: { enable: false } } },
+    particles: {
+      number: { value: 50 },
+      shape: {
+        type: 'image',
+        image: [
+          { src: '/cocaine-brick.png', width: 32, height: 32 },
+          { src: '/money-stack.png', width: 32, height: 32 }
+        ]
+      },
+      size: { value: 36 },
+      move: {
+        enable: true,
+        speed: 1,
+        direction: 'none',
+        outModes: { default: 'bounce' }
+      },
+      opacity: { value: 1 }
+    },
+    detectRetina: true
+  }), [])
+
+  return (
+    <Particles
+      id="tsparticles"
+      init={async (main) => {
+        await loadFull(main)
+        await loadImageShape(main)
+      }}
+      options={particlesOptions}
+      className="absolute inset-0"
+    />
+  )
+}
+
+// 🔐 ENTRY GATE
 const PasswordGate = ({ onAccess, startMusic }) => {
   const [input, setInput] = useState('')
   const [error, setError] = useState(false)
@@ -102,31 +104,66 @@ const PasswordGate = ({ onAccess, startMusic }) => {
     }
   }
 
+  // ✅ Memoize Particles so it doesn't rerender on input
+  const particlesMemo = useMemo(() => (
+    <Particles
+      id="entry-particles"
+      init={async (main) => {
+        await loadFull(main)
+        await loadImageShape(main)
+      }}
+      options={{
+        fullScreen: { enable: false },
+        background: { color: 'transparent' },
+        particles: {
+          number: { value: 50 },
+          shape: {
+            type: 'image',
+            image: [
+              { src: '/cocaine-brick.png', width: 36, height: 36 },
+              { src: '/money-stack.png', width: 36, height: 36 }
+            ]
+          },
+          size: { value: 36 },
+          move: {
+            enable: true,
+            speed: 1,
+            direction: 'none',
+            outModes: { default: 'bounce' }
+          },
+          opacity: { value: 1 }
+        },
+        detectRetina: true
+      }}
+      className="absolute inset-0 z-10"
+    />
+  ), [])
+
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center text-white px-4 overflow-hidden">
-      {/* Entry background image */}
+      {/* Background */}
       <div
         className="absolute inset-0 z-0"
         style={{
           backgroundImage: "url('/entry-desert-suvs.png')",
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'center'
         }}
       />
 
-      {/* Particles layer */}
-      <ParticlesBackground />
+      {/* Particles */}
+      {particlesMemo}
 
       {/* Explosions */}
       <div
         ref={cashExplosionRef}
         className="absolute inset-0 z-20 pointer-events-none bg-repeat bg-contain opacity-0"
-        style={{ backgroundImage: `url('/money-stack.png')` }}
+        style={{ backgroundImage: "url('/money-stack.png')" }}
       />
       <div
         ref={brickExplosionRef}
         className="absolute inset-0 z-10 pointer-events-none bg-repeat bg-contain opacity-0"
-        style={{ backgroundImage: `url('/cocaine-brick.png')` }}
+        style={{ backgroundImage: "url('/cocaine-brick.png')" }}
       />
 
       {/* Logo w/ backdrop */}
@@ -168,6 +205,8 @@ const PasswordGate = ({ onAccess, startMusic }) => {
   )
 }
 
+
+
 // 💼 DASHBOARD
 const Dashboard = ({ toggleAudio, isPlaying }) => {
   const { address, isConnected } = useAccount()
@@ -190,18 +229,16 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
 
   return (
     <div className="min-h-screen text-white p-6 relative flex flex-col items-center justify-center overflow-hidden">
-      {/* Background image */}
       <div
         className="absolute inset-0 z-0"
         style={{
           backgroundImage: "url('/desert-background.png')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
+          backgroundRepeat: 'no-repeat'
         }}
       />
 
-      {/* Content Box */}
       <div className="bg-black/70 border border-gray-700 p-8 rounded-xl z-10 max-w-xl w-full text-center">
         <img
           src="/dashboard-logo.png"
@@ -234,12 +271,10 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
               <p className="text-sm text-gray-400">Wallet Address</p>
               <p className="break-all">{address}</p>
             </div>
-
             <div>
               <p className="text-sm text-gray-400">USDC Balance</p>
               <p>{usdcBalance ? `${usdcBalance.formatted} USDC` : 'Loading...'}</p>
             </div>
-
             <div>
               <label className="block mb-1 text-sm text-gray-300">Contribute USDC</label>
               <input
@@ -257,7 +292,6 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
                 Submit Contribution
               </button>
             </div>
-
             <div>
               <p className="text-sm text-gray-400">Pending $KARTEL</p>
               <p className="text-lg font-semibold">{pendingKartel.toLocaleString()} KARTEL</p>
@@ -285,12 +319,8 @@ const App = () => {
 
   const toggleAudio = () => {
     if (!audioRef.current) return
-    if (isPlaying) {
-      audioRef.current.pause()
-      setIsPlaying(false)
-    } else {
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {})
-    }
+    isPlaying ? audioRef.current.pause() : audioRef.current.play()
+    setIsPlaying(!isPlaying)
   }
 
   return (
