@@ -18,7 +18,7 @@ import { mainnet } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import Particles from 'react-tsparticles'
 
-// ✅ PARTICLES BACKGROUND (used on entry only)
+// ✅ ENTRY PARTICLES
 const ParticlesBackground = () => {
   const particlesOptions = useMemo(() => ({
     fullScreen: { enable: true, zIndex: -1 },
@@ -29,8 +29,8 @@ const ParticlesBackground = () => {
       shape: {
         type: 'image',
         image: [
-          { src: `${window.location.origin}/cocaine-brick.png`, width: 32, height: 32 },
-          { src: `${window.location.origin}/money-stack.png`, width: 32, height: 32 }
+          { src: '/cocaine-brick.png', width: 32, height: 32 },
+          { src: '/money-stack.png', width: 32, height: 32 }
         ]
       },
       size: { value: 36 },
@@ -55,7 +55,7 @@ const ParticlesBackground = () => {
         await loadImageShape(main)
       }}
       options={particlesOptions}
-      className="absolute top-0 left-0 w-full h-full"
+      className="absolute inset-0"
     />
   )
 }
@@ -73,7 +73,7 @@ const wagmiClient = createClient({
   provider
 })
 
-// 🔐 ENTRY PAGE
+// 🔐 ENTRY
 const PasswordGate = ({ onAccess, startMusic }) => {
   const [input, setInput] = useState('')
   const [error, setError] = useState(false)
@@ -106,18 +106,17 @@ const PasswordGate = ({ onAccess, startMusic }) => {
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center text-white px-4 overflow-hidden">
-      {/* ENTRY PAGE BACKGROUND */}
+      {/* Entry background image */}
       <div
         className="absolute inset-0 z-0"
         style={{
           backgroundImage: "url('/entry-desert-suvs.png')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
         }}
       />
 
-      {/* FLOATING PARTICLES */}
+      {/* Particles layer */}
       <ParticlesBackground />
 
       {/* Explosions */}
@@ -132,10 +131,10 @@ const PasswordGate = ({ onAccess, startMusic }) => {
         style={{ backgroundImage: `url('/cocaine-brick.png')` }}
       />
 
-      {/* Logo with black background */}
+      {/* Logo w/ backdrop */}
       <div className="bg-black/70 border border-gray-600 p-4 rounded-xl mb-10 z-30">
         <img
-          src={`${window.location.origin}/kartel-logo.png`}
+          src="/kartel-logo.png"
           alt="KARTEL"
           className={`w-[420px] sm:w-[540px] drop-shadow-2xl transition-all duration-[2000ms] ${
             animateLogo
@@ -145,7 +144,7 @@ const PasswordGate = ({ onAccess, startMusic }) => {
         />
       </div>
 
-      {/* Password Form */}
+      {/* Form */}
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-4 w-full max-w-xs z-30"
@@ -171,8 +170,7 @@ const PasswordGate = ({ onAccess, startMusic }) => {
   )
 }
 
-
-// 💼 DASHBOARD PAGE
+// 💼 DASHBOARD
 const Dashboard = ({ toggleAudio, isPlaying }) => {
   const { address, isConnected } = useAccount()
   const { data: usdcBalance } = useBalance({
@@ -193,8 +191,8 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
   }
 
   return (
-    <div className="min-h-screen text-white p-6 relative overflow-hidden">
-      {/* Background image layered under dashboard */}
+    <div className="min-h-screen text-white p-6 relative flex flex-col items-center justify-center overflow-hidden">
+      {/* Background image */}
       <div
         className="absolute inset-0 z-0"
         style={{
@@ -205,71 +203,72 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
         }}
       />
 
-      {/* Logo + Video */}
-      <img
-        src="/dashboard-logo.png"
-        alt="Dashboard Logo"
-        className="w-[500px] mx-auto mb-6 z-10 relative"
-      />
+      {/* Content Box */}
+      <div className="bg-black/70 border border-gray-700 p-8 rounded-xl z-10 max-w-xl w-full text-center">
+        <img
+          src="/dashboard-logo.png"
+          alt="Dashboard Logo"
+          className="w-[500px] mx-auto mb-6"
+        />
 
-      <video
-        src="/cartel-intro.mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="w-full max-w-3xl mx-auto mb-8 rounded-lg shadow-lg z-10 relative"
-      />
+        <video
+          src="/cartel-intro.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full max-w-3xl mx-auto mb-8 rounded-lg shadow-lg"
+        />
 
-      {/* Connect + Music Controls */}
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10 z-10 relative">
-        <ConnectButton />
-        <button
-          onClick={toggleAudio}
-          className="bg-white text-black px-4 py-2 rounded text-sm hover:bg-gray-300 transition"
-        >
-          {isPlaying ? 'Pause' : 'Play'} Music
-        </button>
-      </div>
-
-      {isConnected ? (
-        <div className="max-w-md w-full space-y-6 z-10 relative">
-          <div>
-            <p className="text-sm text-gray-400">Wallet Address</p>
-            <p className="break-all">{address}</p>
-          </div>
-
-          <div>
-            <p className="text-sm text-gray-400">USDC Balance</p>
-            <p>{usdcBalance ? `${usdcBalance.formatted} USDC` : 'Loading...'}</p>
-          </div>
-
-          <div>
-            <label className="block mb-1 text-sm text-gray-300">Contribute USDC</label>
-            <input
-              type="number"
-              min="0"
-              value={contribution}
-              onChange={(e) => setContribution(e.target.value)}
-              placeholder="Enter amount"
-              className="w-full p-2 bg-gray-800 rounded border border-gray-700"
-            />
-            <button
-              onClick={handleContribute}
-              className="mt-3 w-full p-2 bg-green-600 rounded hover:bg-green-700"
-            >
-              Submit Contribution
-            </button>
-          </div>
-
-          <div>
-            <p className="text-sm text-gray-400">Pending $KARTEL</p>
-            <p className="text-lg font-semibold">{pendingKartel.toLocaleString()} KARTEL</p>
-          </div>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+          <ConnectButton />
+          <button
+            onClick={toggleAudio}
+            className="bg-white text-black px-4 py-2 rounded text-sm hover:bg-gray-300 transition"
+          >
+            {isPlaying ? 'Pause' : 'Play'} Music
+          </button>
         </div>
-      ) : (
-        <p className="text-center mt-10 text-gray-400 z-10">Connect your wallet to continue.</p>
-      )}
+
+        {isConnected ? (
+          <div className="space-y-6">
+            <div>
+              <p className="text-sm text-gray-400">Wallet Address</p>
+              <p className="break-all">{address}</p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-400">USDC Balance</p>
+              <p>{usdcBalance ? `${usdcBalance.formatted} USDC` : 'Loading...'}</p>
+            </div>
+
+            <div>
+              <label className="block mb-1 text-sm text-gray-300">Contribute USDC</label>
+              <input
+                type="number"
+                min="0"
+                value={contribution}
+                onChange={(e) => setContribution(e.target.value)}
+                placeholder="Enter amount"
+                className="w-full p-2 bg-gray-800 rounded border border-gray-700"
+              />
+              <button
+                onClick={handleContribute}
+                className="mt-3 w-full p-2 bg-green-600 rounded hover:bg-green-700"
+              >
+                Submit Contribution
+              </button>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-400">Pending $KARTEL</p>
+              <p className="text-lg font-semibold">{pendingKartel.toLocaleString()} KARTEL</p>
+            </div>
+          </div>
+        ) : (
+          <p className="text-center mt-10 text-gray-400">Connect your wallet to continue.</p>
+        )}
+      </div>
     </div>
   )
 }
