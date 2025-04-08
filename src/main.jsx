@@ -179,7 +179,7 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
       <img
         src="/dashboard-logo.png"
         alt="Dashboard Logo"
-        className="w-[300px] mx-auto mb-6 z-10"
+        className="w-[500px] mx-auto mb-6 z-10"
       />
 
       {/* CARTEL VIDEO */}
