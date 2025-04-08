@@ -20,45 +20,43 @@ import Particles from 'react-tsparticles'
 
 // ✅ ENTRY PARTICLES
 const ParticlesBackground = () => {
-  const particlesOptions = useMemo(() => ({
-    fullScreen: { enable: true, zIndex: -1 },
-    background: { color: '#000' },
-    interactivity: { events: { onClick: { enable: false } } },
-    particles: {
-      number: { value: 50 },
-      shape: {
-        type: 'image',
-        image: [
-          { src: '/cocaine-brick.png', width: 32, height: 32 },
-          { src: '/money-stack.png', width: 32, height: 32 }
-        ]
-      },
-      size: { value: 36 },
-      move: {
-        enable: true,
-        speed: 1,
-        direction: 'none',
-        outModes: { default: 'bounce' }
-      },
-      opacity: { value: 1 }
-    },
-    detectRetina: true
-  }), [])
-
   return (
     <Particles
       id="tsparticles"
+      className="absolute top-0 left-0 w-full h-full z-10"
       init={async (main) => {
         const { loadImageShape } = await import('tsparticles-shape-image')
         const { loadFull } = await import('tsparticles')
         await loadFull(main)
         await loadImageShape(main)
       }}
-      options={particlesOptions}
-      className="absolute inset-0"
+      options={{
+        fullScreen: { enable: false },
+        background: { color: 'transparent' },
+        particles: {
+          number: { value: 40 },
+          shape: {
+            type: 'image',
+            image: [
+              { src: '/cocaine-brick.png', width: 32, height: 32 },
+              { src: '/money-stack.png', width: 32, height: 32 }
+            ]
+          },
+          size: { value: 36 },
+          move: {
+            enable: true,
+            speed: 1,
+            direction: 'none',
+            outModes: { default: 'bounce' }
+          },
+          opacity: { value: 1 }
+        },
+        detectRetina: true
+      }}
     />
   )
 }
+
 
 // 🔧 WALLET CONFIG
 const { chains, provider } = configureChains([mainnet], [publicProvider()])
