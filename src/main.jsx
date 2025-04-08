@@ -105,16 +105,19 @@ const PasswordGate = ({ onAccess, startMusic }) => {
   }
 
   return (
-    <div
-      className="relative min-h-screen flex flex-col items-center justify-center text-white px-4 overflow-hidden"
-      style={{
-        backgroundImage: "url('/entry-desert-suvs.png')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}
-    >
-      {/* Brick + Cash Particles */}
+    <div className="relative min-h-screen flex flex-col items-center justify-center text-white px-4 overflow-hidden">
+      {/* ENTRY PAGE BACKGROUND */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: "url('/entry-desert-suvs.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
+
+      {/* FLOATING PARTICLES */}
       <ParticlesBackground />
 
       {/* Explosions */}
@@ -129,8 +132,8 @@ const PasswordGate = ({ onAccess, startMusic }) => {
         style={{ backgroundImage: `url('/cocaine-brick.png')` }}
       />
 
-      {/* Logo */}
-      <div className="bg-black/70 border border-gray-600 p-4 rounded-xl mb-10 z-10">
+      {/* Logo with black background */}
+      <div className="bg-black/70 border border-gray-600 p-4 rounded-xl mb-10 z-30">
         <img
           src={`${window.location.origin}/kartel-logo.png`}
           alt="KARTEL"
@@ -145,7 +148,7 @@ const PasswordGate = ({ onAccess, startMusic }) => {
       {/* Password Form */}
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-4 w-full max-w-xs z-10"
+        className="flex flex-col gap-4 w-full max-w-xs z-30"
       >
         <input
           type="password"
@@ -160,11 +163,14 @@ const PasswordGate = ({ onAccess, startMusic }) => {
         >
           Enter
         </button>
-        {error && <p className="text-red-500 text-sm">Incorrect password. Try again.</p>}
+        {error && (
+          <p className="text-red-500 text-sm">Incorrect password. Try again.</p>
+        )}
       </form>
     </div>
   )
 }
+
 
 // 💼 DASHBOARD PAGE
 const Dashboard = ({ toggleAudio, isPlaying }) => {
