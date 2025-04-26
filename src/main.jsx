@@ -73,7 +73,7 @@ const ParticlesBackground = () => {
   )
 }
 
-// 🔐 ENTRY GATE
+// 🔐 PASSWORD GATE
 const PasswordGate = ({ onAccess, startMusic }) => {
   const [input, setInput] = useState('')
   const [error, setError] = useState(false)
@@ -104,7 +104,6 @@ const PasswordGate = ({ onAccess, startMusic }) => {
     }
   }
 
-  // ✅ Memoize Particles so it doesn't rerender on input
   const particlesMemo = useMemo(() => (
     <Particles
       id="entry-particles"
@@ -141,7 +140,6 @@ const PasswordGate = ({ onAccess, startMusic }) => {
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center text-white px-4 overflow-hidden">
-      {/* Background */}
       <div
         className="absolute inset-0 z-0"
         style={{
@@ -150,11 +148,7 @@ const PasswordGate = ({ onAccess, startMusic }) => {
           backgroundPosition: 'center'
         }}
       />
-
-      {/* Particles */}
       {particlesMemo}
-
-      {/* Explosions */}
       <div
         ref={cashExplosionRef}
         className="absolute inset-0 z-20 pointer-events-none bg-repeat bg-contain opacity-0"
@@ -165,67 +159,49 @@ const PasswordGate = ({ onAccess, startMusic }) => {
         className="absolute inset-0 z-10 pointer-events-none bg-repeat bg-contain opacity-0"
         style={{ backgroundImage: "url('/cocaine-brick.png')" }}
       />
-
-      {/* Logo + Form Combined in One Box */}
-<div className="bg-black/70 border border-gray-600 p-6 rounded-xl z-30 max-w-md w-full flex flex-col items-center">
-  <img
-    src="/kartel-logo.png"
-    alt="KARTEL"
-    className={`w-[420px] sm:w-[500px] drop-shadow-2xl mb-6 transition-all duration-[2000ms] ${
-      animateLogo
-        ? 'opacity-0 scale-125 blur-sm'
-        : 'animate-fade-in-slow animate-pulse'
-    }`}
-  />
-
-  <form
-    onSubmit={handleSubmit}
-    className="flex flex-col gap-4 w-full"
-  >
-    <input
-      type="password"
-      placeholder="Enter Password"
-      value={input}
-      onChange={(e) => setInput(e.target.value)}
-      className="p-3 rounded bg-gray-800 border border-gray-600 text-white w-full"
-    />
-    <button
-      type="submit"
-      className="p-3 bg-green-600 rounded hover:bg-green-700 w-full"
-    >
-      Enter
-    </button>
-    {error && (
-      <p className="text-red-500 text-sm text-center">Incorrect password. Try again.</p>
-    )}
-  </form>
-</div>
-
+      <div className="bg-black/70 border border-gray-600 p-6 rounded-xl z-30 max-w-md w-full flex flex-col items-center">
+        <img
+          src="/kartel-logo.png"
+          alt="KARTEL"
+          className={`w-[420px] sm:w-[500px] drop-shadow-2xl mb-6 transition-all duration-[2000ms] ${
+            animateLogo
+              ? 'opacity-0 scale-125 blur-sm'
+              : 'animate-fade-in-slow animate-pulse'
+          }`}
+        />
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4 w-full"
+        >
+          <input
+            type="password"
+            placeholder="Enter Password"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="p-3 rounded bg-gray-800 border border-gray-600 text-white w-full"
+          />
+          <button
+            type="submit"
+            className="p-3 bg-green-600 rounded hover:bg-green-700 w-full"
+          >
+            Enter
+          </button>
+          {error && (
+            <p className="text-red-500 text-sm text-center">Incorrect password. Try again.</p>
+          )}
+        </form>
+      </div>
     </div>
   )
 }
 
-
-
 // 💼 DASHBOARD
 const Dashboard = ({ toggleAudio, isPlaying }) => {
   const { address, isConnected } = useAccount()
-  const { data: usdcBalance } = useBalance({
+  const { data: kartelBalance } = useBalance({
     addressOrName: address,
-    token: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
     watch: true
   })
-
-  const [contribution, setContribution] = useState('')
-  const [pendingKartel, setPendingKartel] = useState(0)
-  const KARTEL_RATE = 1000
-
-  const handleContribute = () => {
-    const usdc = parseFloat(contribution)
-    if (!isNaN(usdc)) {
-      setPendingKartel(usdc * KARTEL_RATE)
-    }
-  }
 
   return (
     <div className="min-h-screen text-white p-6 relative flex flex-col items-center justify-center overflow-hidden">
@@ -238,14 +214,12 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
           backgroundRepeat: 'no-repeat'
         }}
       />
-
       <div className="bg-black/70 border border-gray-700 p-8 rounded-xl z-10 max-w-xl w-full text-center">
         <img
           src="/dashboard-logo.png"
           alt="Dashboard Logo"
           className="w-[500px] mx-auto mb-6"
         />
-
         <video
           src="/cartel-intro.mp4"
           autoPlay
@@ -254,7 +228,6 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
           playsInline
           className="w-full max-w-3xl mx-auto mb-8 rounded-lg shadow-lg"
         />
-
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
           <ConnectButton />
           <button
@@ -264,7 +237,6 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
             {isPlaying ? 'Pause' : 'Play'} Music
           </button>
         </div>
-
         {isConnected ? (
           <div className="space-y-6">
             <div>
@@ -272,29 +244,8 @@ const Dashboard = ({ toggleAudio, isPlaying }) => {
               <p className="break-all">{address}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-400">USDC Balance</p>
-              <p>{usdcBalance ? `${usdcBalance.formatted} USDC` : 'Loading...'}</p>
-            </div>
-            <div>
-              <label className="block mb-1 text-sm text-gray-300">Contribute USDC</label>
-              <input
-                type="number"
-                min="0"
-                value={contribution}
-                onChange={(e) => setContribution(e.target.value)}
-                placeholder="Enter amount"
-                className="w-full p-2 bg-gray-800 rounded border border-gray-700"
-              />
-              <button
-                onClick={handleContribute}
-                className="mt-3 w-full p-2 bg-green-600 rounded hover:bg-green-700"
-              >
-                Submit Contribution
-              </button>
-            </div>
-            <div>
-              <p className="text-sm text-gray-400">Pending $KARTEL</p>
-              <p className="text-lg font-semibold">{pendingKartel.toLocaleString()} KARTEL</p>
+              <p className="text-sm text-gray-400">KARTEL Balance</p>
+              <p>{kartelBalance ? `${kartelBalance.formatted} KARTEL` : 'Loading...'}</p>
             </div>
           </div>
         ) : (
