@@ -60,8 +60,8 @@ const Dashboard = () => {
             <h2 className="text-xl font-semibold mb-4">BALANCES</h2>
             <div className="space-y-2">
               <p>KARTEL Balance: 3,311.243 ($967.21)</p>
-              <p>USDC Balance: 7,733.542 ($7733.542)</p>
-              <p>MXND Balance: 66,240.672 ($3312.422)</p>
+              <p>USDC Balance: 7,733.542 ($7,733.542)</p>
+              <p>MXND Balance: 66,240.672 ($3,312.422)</p>
             </div>
           </div>
 
@@ -87,9 +87,9 @@ const Dashboard = () => {
           {/* Bonding */}
           <div className="bg-gray-900 p-4 rounded border border-gray-700">
             <h2 className="text-xl font-semibold mb-4">BONDING</h2>
-            <p>KARTEL/MXND Bonding APY: 422.223%</p>
-            <p>KARTEL/MXND Balance: 0.0000242223 ($1221.984)</p>
-            <p>Pending Rewards: 4659.133 KARTEL ($1397.772)</p>
+            <p>KARTEL/MXND Bonding APY: 422.223% DAILY 1.156%</p>
+            <p>KARTEL/MXND Balance: 0.0000242223 ($1,221.984)</p>
+            <p>Pending Rewards: 4659.133 KARTEL ($1,397.772)</p>
             <div className="flex items-center justify-between mb-2">
               <p>Available Rewards: 369.223 KARTEL ($110.122)</p>
               <button className="bg-green-700 hover:bg-green-800 text-white px-3 py-1 rounded text-sm">CLAIM</button>
