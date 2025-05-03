@@ -104,7 +104,7 @@ const Dashboard = () => {
             <p>KARTEL/MXND LP: 0.0000331 ($12,229.032)</p>
             <p>KARTEL Balance: 30,4122.223 ($9,123.443)</p>
             <p>USDC Balance: 11,833.876 ($11,833.876)</p>
-            <p>MXND Balance: 144,640 ($7232.214)</p>
+            <p>MXND Balance: 144,640 ($7,232.214)</p>
           </div>
         </div>
       </div>
