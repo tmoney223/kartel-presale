@@ -1,297 +1,129 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react'
-import ReactDOM from 'react-dom/client'
-import './index.css'
-import '@rainbow-me/rainbowkit/styles.css'
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import '@rainbow-me/rainbowkit/styles.css';
 import {
   getDefaultWallets,
   RainbowKitProvider,
   ConnectButton
-} from '@rainbow-me/rainbowkit'
+} from '@rainbow-me/rainbowkit';
 import {
   configureChains,
   createClient,
   WagmiConfig,
   useAccount,
   useBalance
-} from 'wagmi'
-import { mainnet } from 'wagmi/chains'
-import { publicProvider } from 'wagmi/providers/public'
-import Particles from 'react-tsparticles'
-import { loadFull } from 'tsparticles'
-import { loadImageShape } from 'tsparticles-shape-image'
+} from 'wagmi';
+import { mainnet } from 'wagmi/chains';
+import { publicProvider } from 'wagmi/providers/public';
 
-// 🔧 WALLET CONFIG
-const { chains, provider } = configureChains([mainnet], [publicProvider()])
+// Wallet config
+const { chains, provider } = configureChains([mainnet], [publicProvider()]);
 const { connectors } = getDefaultWallets({
-  appName: 'Kartel Presale',
+  appName: 'Kartel Exchange',
   projectId: 'c15464b8daf8151f93cd366810034e5b',
   chains
-})
-const wagmiClient = createClient({
-  autoConnect: true,
-  connectors,
-  provider
-})
+});
+const wagmiClient = createClient({ autoConnect: true, connectors, provider });
 
-// ✅ PARTICLES BACKGROUND
-const ParticlesBackground = () => {
-  const particlesOptions = useMemo(() => ({
-    fullScreen: { enable: true, zIndex: -1 },
-    background: { color: '#000' },
-    interactivity: { events: { onClick: { enable: false } } },
-    particles: {
-      number: { value: 50 },
-      shape: {
-        type: 'image',
-        image: [
-          { src: '/cocaine-brick.png', width: 32, height: 32 },
-          { src: '/money-stack.png', width: 32, height: 32 }
-        ]
-      },
-      size: { value: 36 },
-      move: {
-        enable: true,
-        speed: 1,
-        direction: 'none',
-        outModes: { default: 'bounce' }
-      },
-      opacity: { value: 1 }
-    },
-    detectRetina: true
-  }), [])
+const Dashboard = () => {
+  const { address, isConnected } = useAccount();
+  const [inputUSDC, setInputUSDC] = useState('');
+  const [inputRedeem, setInputRedeem] = useState('');
+  const [stakeAmount, setStakeAmount] = useState('');
 
   return (
-    <Particles
-      id="tsparticles"
-      init={async (main) => {
-        await loadFull(main)
-        await loadImageShape(main)
-      }}
-      options={particlesOptions}
-      className="absolute inset-0"
-    />
-  )
-}
+    <div
+  className="min-h-screen bg-black text-white p-6"
+  style={{
+    backgroundImage: "url('/dashboardbg.png')",
+    backgroundSize: 'cover',
+    backgroundPosition: 'center'
+  }}
+>
 
-// 🔐 PASSWORD GATE
-const PasswordGate = ({ onAccess, startMusic }) => {
-  const [input, setInput] = useState('')
-  const [error, setError] = useState(false)
-  const [animateLogo, setAnimateLogo] = useState(false)
-
-  const cashExplosionRef = useRef(null)
-  const brickExplosionRef = useRef(null)
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (input === 'freecoca') {
-      if (cashExplosionRef.current) {
-        cashExplosionRef.current.classList.add('explode')
-        cashExplosionRef.current.style.opacity = 1
-      }
-      if (brickExplosionRef.current) {
-        brickExplosionRef.current.classList.add('explode')
-        brickExplosionRef.current.style.opacity = 1
-      }
-
-      startMusic()
-      setAnimateLogo(true)
-      setTimeout(() => {
-        onAccess(true)
-      }, 1500)
-    } else {
-      setError(true)
-    }
-  }
-
-  const particlesMemo = useMemo(() => (
-    <Particles
-      id="entry-particles"
-      init={async (main) => {
-        await loadFull(main)
-        await loadImageShape(main)
-      }}
-      options={{
-        fullScreen: { enable: false },
-        background: { color: 'transparent' },
-        particles: {
-          number: { value: 50 },
-          shape: {
-            type: 'image',
-            image: [
-              { src: '/cocaine-brick.png', width: 36, height: 36 },
-              { src: '/money-stack.png', width: 36, height: 36 }
-            ]
-          },
-          size: { value: 36 },
-          move: {
-            enable: true,
-            speed: 1,
-            direction: 'none',
-            outModes: { default: 'bounce' }
-          },
-          opacity: { value: 1 }
-        },
-        detectRetina: true
-      }}
-      className="absolute inset-0 z-10"
-    />
-  ), [])
-
-  return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center text-white px-4 overflow-hidden">
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: "url('/entry-desert-suvs.png')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      />
-      {particlesMemo}
-      <div
-        ref={cashExplosionRef}
-        className="absolute inset-0 z-20 pointer-events-none bg-repeat bg-contain opacity-0"
-        style={{ backgroundImage: "url('/money-stack.png')" }}
-      />
-      <div
-        ref={brickExplosionRef}
-        className="absolute inset-0 z-10 pointer-events-none bg-repeat bg-contain opacity-0"
-        style={{ backgroundImage: "url('/cocaine-brick.png')" }}
-      />
-      <div className="bg-black/70 border border-gray-600 p-6 rounded-xl z-30 max-w-md w-full flex flex-col items-center">
-        <img
-          src="/kartel-logo.png"
-          alt="KARTEL"
-          className={`w-[420px] sm:w-[500px] drop-shadow-2xl mb-6 transition-all duration-[2000ms] ${
-            animateLogo
-              ? 'opacity-0 scale-125 blur-sm'
-              : 'animate-fade-in-slow animate-pulse'
-          }`}
-        />
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col gap-4 w-full"
-        >
-          <input
-            type="password"
-            placeholder="Enter Password"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            className="p-3 rounded bg-gray-800 border border-gray-600 text-white w-full"
-          />
-          <button
-            type="submit"
-            className="p-3 bg-green-600 rounded hover:bg-green-700 w-full"
-          >
-            Enter
-          </button>
-          {error && (
-            <p className="text-red-500 text-sm text-center">Incorrect password. Try again.</p>
-          )}
-        </form>
-      </div>
-    </div>
-  )
-}
-
-// 💼 DASHBOARD
-const Dashboard = ({ toggleAudio, isPlaying }) => {
-  const { address, isConnected } = useAccount()
-  const { data: kartelBalance } = useBalance({
-    addressOrName: address,
-    watch: true
-  })
-
-  return (
-    <div className="min-h-screen text-white p-6 relative flex flex-col items-center justify-center overflow-hidden">
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: "url('/desert-background.png')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      />
-      <div className="bg-black/70 border border-gray-700 p-8 rounded-xl z-10 max-w-xl w-full text-center">
-        <img
-          src="/dashboard-logo.png"
-          alt="Dashboard Logo"
-          className="w-[500px] mx-auto mb-6"
-        />
-        <video
-          src="/cartel-intro.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="w-full max-w-3xl mx-auto mb-8 rounded-lg shadow-lg"
-        />
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-          <ConnectButton />
-          <button
-            onClick={toggleAudio}
-            className="bg-white text-black px-4 py-2 rounded text-sm hover:bg-gray-300 transition"
-          >
-            {isPlaying ? 'Pause' : 'Play'} Music
-          </button>
-        </div>
-        {isConnected ? (
-          <div className="space-y-6">
-            <div>
-              <p className="text-sm text-gray-400">Wallet Address</p>
-              <p className="break-all">{address}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-400">KARTEL Balance</p>
-              <p>{kartelBalance ? `${kartelBalance.formatted} KARTEL` : 'Loading...'}</p>
-            </div>
-          </div>
-        ) : (
-          <p className="text-center mt-10 text-gray-400">Connect your wallet to continue.</p>
+      {/* Top Logo & Connect */}
+      <div className="flex flex-col items-center mb-6">
+        <img src="/kartel-logo.png" alt="KARTEL" className="w-80 mb-2 border-4 border-black rounded" />
+        <div className="mt-2"><ConnectButton label="Connect Wallet" chainStatus="none" showBalance={false} className="px-6 py-3 text-lg bg-green-600 hover:bg-green-700 rounded" /></div>
+        {isConnected && (
+          <div className="mt-2 bg-gray-800 px-4 py-2 rounded text-sm border border-gray-600">{address}</div>
         )}
       </div>
+
+      {/* Dashboard Content */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Left Side */}
+        <div className="w-full lg:w-1/2 space-y-6">
+          {/* Balances */}
+          <div className="bg-gray-900 p-4 rounded border border-gray-700">
+            <h2 className="text-xl font-semibold mb-4">BALANCES</h2>
+            <div className="space-y-2">
+              <p>KARTEL Balance: 3,311.243 ($967.21)</p>
+              <p>USDC Balance: 7,733.542 ($7733.542)</p>
+              <p>MXND Balance: 66,240.672 ($3312.422)</p>
+            </div>
+          </div>
+
+          {/* Minting */}
+          <div className="bg-gray-900 p-4 rounded border border-gray-700">
+            <h2 className="text-xl font-semibold mb-4">MINTING</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block mb-1">Mint MXND</label>
+                <input type="number" value={inputUSDC} onChange={(e) => setInputUSDC(e.target.value)} className="w-full p-2 rounded bg-gray-800 border border-gray-600" placeholder="Enter USDC amount" />
+              </div>
+              <div>
+                <label className="block mb-1">Redeem USDC</label>
+                <input type="number" value={inputRedeem} onChange={(e) => setInputRedeem(e.target.value)} className="w-full p-2 rounded bg-gray-800 border border-gray-600" placeholder="Enter MXND amount" />
+              </div>
+              <a href="#" className="block mt-4 bg-green-700 hover:bg-green-800 text-white text-center py-2 rounded">CREATE KARTEL/MXND LP ON UNISWAP</a>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side */}
+        <div className="w-full lg:w-1/2 space-y-6">
+          {/* Bonding */}
+          <div className="bg-gray-900 p-4 rounded border border-gray-700">
+            <h2 className="text-xl font-semibold mb-4">BONDING</h2>
+            <p>KARTEL/MXND Bonding APY: 422.223%</p>
+            <p>KARTEL/MXND Balance: 0.0000242223 ($1221.984)</p>
+            <p>Pending Rewards: 4659.133 KARTEL ($1397.772)</p>
+            <div className="flex items-center justify-between mb-2">
+              <p>Available Rewards: 369.223 KARTEL ($110.122)</p>
+              <button className="bg-green-700 hover:bg-green-800 text-white px-3 py-1 rounded text-sm">CLAIM</button>
+            </div>
+            <input type="number" value={stakeAmount} onChange={(e) => setStakeAmount(e.target.value)} className="w-full mt-3 p-2 rounded bg-gray-800 border border-gray-600" placeholder="Enter amount" />
+            <button className="mt-4 w-full bg-green-600 hover:bg-green-700 rounded py-2">Bond</button>
+          </div>
+
+          {/* Treasury */}
+          <div className="bg-gray-900 p-4 rounded border border-gray-700">
+            <h2 className="text-xl font-semibold mb-4">TREASURY 0xF08a91c214c42a0F51DE0C5691FDf6Fa37e6E1f2</h2>
+            <p>KARTEL/MXND LP: 0.0000331 ($12,229.032)</p>
+            <p>KARTEL Balance: 30,4122.223 ($9,123.443)</p>
+            <p>USDC Balance: 11,833.876 ($11,833.876)</p>
+            <p>MXND Balance: 144,640 ($7232.214)</p>
+          </div>
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-// 🧠 APP ROOT
 const App = () => {
-  const [access, setAccess] = useState(false)
-  const audioRef = useRef(null)
-  const [isPlaying, setIsPlaying] = useState(false)
-
-  const startMusic = () => {
-    if (audioRef.current) {
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {})
-    }
-  }
-
-  const toggleAudio = () => {
-    if (!audioRef.current) return
-    isPlaying ? audioRef.current.pause() : audioRef.current.play()
-    setIsPlaying(!isPlaying)
-  }
-
   return (
-    <>
-      <audio ref={audioRef} src="/kartel-theme.mp3" preload="auto" loop />
-      {access ? (
-        <Dashboard toggleAudio={toggleAudio} isPlaying={isPlaying} />
-      ) : (
-        <PasswordGate onAccess={setAccess} startMusic={startMusic} />
-      )}
-    </>
-  )
-}
+    <WagmiConfig client={wagmiClient}>
+      <RainbowKitProvider chains={chains}>
+        <Dashboard />
+      </RainbowKitProvider>
+    </WagmiConfig>
+  );
+};
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains}>
-        <App />
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <App />
   </React.StrictMode>
-)
+);
