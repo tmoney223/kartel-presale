@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+// main.jsx — FINAL: avoids screen crash on input by moving parseUnits inside button handlers
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import '@rainbow-me/rainbowkit/styles.css';
@@ -41,7 +42,8 @@ const TREASURY = "0xF08a91c214c42a0F51DE0C5691FDf6Fa37e6E1f2";
 
 const PESO_ABI = [
   { name: 'mint', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'usdcAmount', type: 'uint256' }], outputs: [] },
-  { name: 'burn', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'pesoAmount', type: 'uint256' }], outputs: [] }
+  { name: 'burn', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'pesoAmount', type: 'uint256' }], outputs: [] },
+  { name: 'approve', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'spender', type: 'address' }, { name: 'amount', type: 'uint256' }], outputs: [] },
 ];
 
 const { chains, provider } = configureChains([base], [publicProvider()]);
@@ -64,7 +66,6 @@ const Dashboard = () => {
   const usdc = useBalance({ address, token: USDC });
   const peso = useBalance({ address, token: PESO });
   const lp = useBalance({ address, token: LP });
-
   const kartelT = useBalance({ address: TREASURY, token: KARTEL });
   const usdcT = useBalance({ address: TREASURY, token: USDC });
   const pesoT = useBalance({ address: TREASURY, token: PESO });
@@ -114,43 +115,51 @@ const Dashboard = () => {
 
   const backingRatio = pesoSupply > 0 ? (usdcReserves / (pesoSupply * 0.05)).toFixed(2) : '...';
 
-  const parsedUSDC = useMemo(() => {
-    const clean = inputUSDC.trim();
-    if (!clean || isNaN(clean)) return undefined;
+  const handleApproveUSDC = () => {
     try {
-      return parseUnits(clean, 6).toString();
-    } catch {
-      return undefined;
+      const amount = parseUnits(inputUSDC, 6);
+      approveUSDC?.({ args: [PESO, amount] });
+    } catch (err) {
+      console.error("USDC approve error", err);
     }
-  }, [inputUSDC]);
+  };
 
-  const parsedPESO = useMemo(() => {
-    const clean = inputRedeem.trim();
-    if (!clean || isNaN(clean)) return undefined;
+  const handleMint = () => {
     try {
-      return parseUnits(clean, 18).toString();
-    } catch {
-      return undefined;
+      const amount = parseUnits(inputUSDC, 6);
+      mintWrite?.({ args: [amount] });
+    } catch (err) {
+      console.error("Mint error", err);
     }
-  }, [inputRedeem]);
+  };
 
-  const { config: mintConfig } = usePrepareContractWrite({
-    address: PESO,
-    abi: PESO_ABI,
-    functionName: 'mint',
-    args: parsedUSDC ? [parsedUSDC] : undefined,
-    enabled: Boolean(parsedUSDC)
-  });
+  const handleApprovePESO = () => {
+    try {
+      const amount = parseUnits(inputRedeem, 18);
+      approvePESO?.({ args: [PESO, amount] });
+    } catch (err) {
+      console.error("PESO approve error", err);
+    }
+  };
+
+  const handleBurn = () => {
+    try {
+      const amount = parseUnits(inputRedeem, 18);
+      burnWrite?.({ args: [amount] });
+    } catch (err) {
+      console.error("Burn error", err);
+    }
+  };
+
+  const { config: mintConfig } = usePrepareContractWrite({ address: PESO, abi: PESO_ABI, functionName: 'mint' });
+  const { config: approveUSDCConfig } = usePrepareContractWrite({ address: USDC, abi: PESO_ABI, functionName: 'approve' });
+  const { config: burnConfig } = usePrepareContractWrite({ address: PESO, abi: PESO_ABI, functionName: 'burn' });
+  const { config: approvePESOConfig } = usePrepareContractWrite({ address: PESO, abi: PESO_ABI, functionName: 'approve' });
+
   const { write: mintWrite } = useContractWrite(mintConfig);
-
-  const { config: burnConfig } = usePrepareContractWrite({
-    address: PESO,
-    abi: PESO_ABI,
-    functionName: 'burn',
-    args: parsedPESO ? [parsedPESO] : undefined,
-    enabled: Boolean(parsedPESO)
-  });
+  const { write: approveUSDC } = useContractWrite(approveUSDCConfig);
   const { write: burnWrite } = useContractWrite(burnConfig);
+  const { write: approvePESO } = useContractWrite(approvePESOConfig);
 
   return (
     <div className="min-h-screen text-white p-6 flex flex-col items-center" style={{
@@ -170,12 +179,14 @@ const Dashboard = () => {
           <h2 className="text-xl font-bold mb-2">MINTING <span className="text-sm text-gray-400">20 PESO per 1 USDC</span></h2>
           <div className="space-y-4">
             <div className="flex gap-2 items-end">
-              <input type="number" value={inputUSDC} onChange={(e) => setInputUSDC(e.target.value)} placeholder="USDC to Mint" className="w-full p-2 rounded bg-gray-800 border border-gray-600" />
-              <button disabled={!mintWrite} onClick={() => mintWrite?.()} className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white">MINT</button>
+              <input type="text" value={inputUSDC} onChange={(e) => setInputUSDC(e.target.value)} placeholder="USDC to Mint" className="w-full p-2 rounded bg-gray-800 border border-gray-600" />
+              <button onClick={handleApproveUSDC} className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded text-white">APPROVE</button>
+              <button onClick={handleMint} className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white">MINT</button>
             </div>
             <div className="flex gap-2 items-end">
-              <input type="number" value={inputRedeem} onChange={(e) => setInputRedeem(e.target.value)} placeholder="PESO to Redeem" className="w-full p-2 rounded bg-gray-800 border border-gray-600" />
-              <button disabled={!burnWrite} onClick={() => burnWrite?.()} className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white">REDEEM</button>
+              <input type="text" value={inputRedeem} onChange={(e) => setInputRedeem(e.target.value)} placeholder="PESO to Redeem" className="w-full p-2 rounded bg-gray-800 border border-gray-600" />
+              <button onClick={handleApprovePESO} className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded text-white">APPROVE</button>
+              <button onClick={handleBurn} className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white">REDEEM</button>
             </div>
           </div>
         </div>
