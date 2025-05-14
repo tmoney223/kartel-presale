@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import '@rainbow-me/rainbowkit/styles.css';
@@ -114,12 +114,32 @@ const Dashboard = () => {
 
   const backingRatio = pesoSupply > 0 ? (usdcReserves / (pesoSupply * 0.05)).toFixed(2) : '...';
 
+  const parsedUSDC = useMemo(() => {
+    const clean = inputUSDC.trim();
+    if (!clean || isNaN(clean)) return undefined;
+    try {
+      return parseUnits(clean, 6).toString();
+    } catch {
+      return undefined;
+    }
+  }, [inputUSDC]);
+
+  const parsedPESO = useMemo(() => {
+    const clean = inputRedeem.trim();
+    if (!clean || isNaN(clean)) return undefined;
+    try {
+      return parseUnits(clean, 18).toString();
+    } catch {
+      return undefined;
+    }
+  }, [inputRedeem]);
+
   const { config: mintConfig } = usePrepareContractWrite({
     address: PESO,
     abi: PESO_ABI,
     functionName: 'mint',
-    args: inputUSDC ? [parseUnits(inputUSDC, 6).toString()] : undefined,
-    enabled: Boolean(inputUSDC)
+    args: parsedUSDC ? [parsedUSDC] : undefined,
+    enabled: Boolean(parsedUSDC)
   });
   const { write: mintWrite } = useContractWrite(mintConfig);
 
@@ -127,8 +147,8 @@ const Dashboard = () => {
     address: PESO,
     abi: PESO_ABI,
     functionName: 'burn',
-    args: inputRedeem ? [parseUnits(inputRedeem, 18).toString()] : undefined,
-    enabled: Boolean(inputRedeem)
+    args: parsedPESO ? [parsedPESO] : undefined,
+    enabled: Boolean(parsedPESO)
   });
   const { write: burnWrite } = useContractWrite(burnConfig);
 
