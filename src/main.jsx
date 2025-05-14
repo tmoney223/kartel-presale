@@ -48,7 +48,6 @@ const Dashboard = () => {
   const { address, isConnected } = useAccount();
   const [inputUSDC, setInputUSDC] = useState('');
   const [inputRedeem, setInputRedeem] = useState('');
-  const [stakeAmount, setStakeAmount] = useState('');
   const [prices, setPrices] = useState({ KARTEL: 0.0, PESO: 0.05, USDC: 1 });
   const [pesoSupply, setPesoSupply] = useState(0);
   const [usdcReserves, setUsdcReserves] = useState(0);
@@ -108,88 +107,68 @@ const Dashboard = () => {
   const backingRatio = pesoSupply > 0 ? (usdcReserves / (pesoSupply * 0.05)).toFixed(2) : '...';
 
   return (
-    <div className="min-h-screen text-white p-6" style={{
+    <div className="min-h-screen text-white p-6 flex flex-col items-center" style={{
       backgroundColor: '#2c2c2c',
       backgroundImage: "url('/desert-background.png')",
       backgroundSize: 'cover',
       backgroundPosition: 'center'
     }}>
+      {/* Logo & Connect */}
       <div className="flex flex-col items-center mb-6">
-        <img src="/kartel-logo.png" alt="KARTEL" className="w-80 mb-2 border-4 border-black rounded" />
-        <div className="mt-2">
-          <ConnectButton label="Connect Wallet" chainStatus="none" showBalance={false} />
-        </div>
+        <img src="/kartel-logo.png" alt="KARTEL" className="w-[20rem] mb-4 border-4 border-black rounded" />
+        <ConnectButton label="Connect Wallet" chainStatus="none" showBalance={false} />
         {isConnected && (
-          <div className="mt-2 bg-gray-800 px-4 py-2 rounded text-sm border border-gray-600">
-            {address}
-          </div>
+          <div className="mt-2 bg-gray-800 px-4 py-2 rounded text-sm border border-gray-600">{address}</div>
         )}
       </div>
-      <div className="flex flex-col lg:flex-row gap-6">
-        <div className="w-full lg:w-1/2 space-y-6">
-          <div className="bg-gray-900 p-4 rounded border border-gray-700">
-            <h2 className="text-xl font-semibold mb-4">BALANCES</h2>
-            <p>KARTEL: {kartel.data?.formatted}{formatUsd('KARTEL', kartel.data?.formatted)}</p>
-            <p>USDC: {usdc.data?.formatted}{formatUsd('USDC', usdc.data?.formatted)}</p>
-            <p>PESO: {peso.data?.formatted}{formatUsd('PESO', peso.data?.formatted)}</p>
-            <p>KARTEL/PESO LP: {lp.data?.formatted}</p>
-          </div>
-          <div className="bg-gray-900 p-4 rounded border border-gray-700">
-            <h2 className="text-xl font-semibold mb-2">MINTING <span className="text-sm text-gray-400">20 PESO per 1 USDC</span></h2>
-            <div className="space-y-4">
-              <div className="flex gap-2 items-end">
-                <input type="number" value={inputUSDC} onChange={(e) => setInputUSDC(e.target.value)} placeholder="USDC to Mint" className="w-full p-2 rounded bg-gray-800 border border-gray-600" />
-                <button className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white">MINT</button>
-              </div>
-              <div className="flex gap-2 items-end">
-                <input type="number" value={inputRedeem} onChange={(e) => setInputRedeem(e.target.value)} placeholder="PESO to Redeem" className="w-full p-2 rounded bg-gray-800 border border-gray-600" />
-                <button className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white">REDEEM</button>
-              </div>
+
+      {/* Content */}
+      <div className="w-full max-w-3xl space-y-6">
+        {/* BALANCES */}
+        <div className="bg-gray-900 p-4 rounded border border-gray-700 text-center">
+          <h2 className="text-xl font-bold mb-4">BALANCES</h2>
+          <p>KARTEL: {kartel.data?.formatted}{formatUsd('KARTEL', kartel.data?.formatted)}</p>
+          <p>USDC: {usdc.data?.formatted}{formatUsd('USDC', usdc.data?.formatted)}</p>
+          <p>PESO: {peso.data?.formatted}{formatUsd('PESO', peso.data?.formatted)}</p>
+          <p>KARTEL/PESO LP: {lp.data?.formatted}</p>
+        </div>
+
+        {/* MINTING */}
+        <div className="bg-gray-900 p-4 rounded border border-gray-700 text-center">
+          <h2 className="text-xl font-bold mb-2">MINTING <span className="text-sm text-gray-400">20 PESO per 1 USDC</span></h2>
+          <div className="space-y-4">
+            <div className="flex gap-2 items-end">
+              <input type="number" value={inputUSDC} onChange={(e) => setInputUSDC(e.target.value)} placeholder="USDC to Mint" className="w-full p-2 rounded bg-gray-800 border border-gray-600" />
+              <button className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white">MINT</button>
             </div>
-          </div>
-          <div className="bg-gray-900 p-4 rounded border border-gray-700">
-            <h2 className="text-xl font-semibold mb-4">TREASURY {TREASURY}</h2>
-            <p>KARTEL/PESO LP: {lpT.data?.formatted}</p>
-            <p>KARTEL: {kartelT.data?.formatted}{formatUsd('KARTEL', kartelT.data?.formatted)}</p>
-            <p>USDC: {usdcT.data?.formatted}{formatUsd('USDC', usdcT.data?.formatted)}</p>
-            <p>PESO: {pesoT.data?.formatted}{formatUsd('PESO', pesoT.data?.formatted)}</p>
-          </div>
-          <div className="bg-gray-900 p-4 rounded border border-gray-700">
-            <h2 className="text-xl font-semibold mb-4">STATISTICS</h2>
-            <p>PESO Circulating Supply: {pesoSupply.toLocaleString()}</p>
-            <p>USDC Reserves: ${usdcReserves.toLocaleString()}</p>
-            <p>Backing Ratio: {backingRatio}</p>
+            <div className="flex gap-2 items-end">
+              <input type="number" value={inputRedeem} onChange={(e) => setInputRedeem(e.target.value)} placeholder="PESO to Redeem" className="w-full p-2 rounded bg-gray-800 border border-gray-600" />
+              <button className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white">REDEEM</button>
+            </div>
           </div>
         </div>
-        <div className="w-full lg:w-1/2 space-y-6">
-          <div className="bg-gray-900 p-4 rounded border border-gray-700">
-            <h2 className="text-xl font-semibold mb-4">STAKING</h2>
-            <p>Staking APY: N/A (Daily N/A)</p>
-            <p>Total KARTEL/PESO LP Staked: --</p>
-            <p>Your Staked Balance: --</p>
-            <p>Pending Rewards: 0 KARTEL</p>
-            <input type="text" placeholder="Enter LP Amount" className="w-full mt-3 p-2 rounded bg-gray-800 border border-gray-600" />
-            <div className="flex gap-4 mt-2">
-              <button className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded w-full">STAKE</button>
-              <button className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded w-full">UNSTAKE</button>
-            </div>
-            <div className="flex items-center justify-between mt-4">
-              <p>Claimable Rewards: 0 KARTEL</p>
-              <button className="bg-green-700 hover:bg-green-800 text-white px-3 py-1 rounded text-sm">CLAIM</button>
-            </div>
-          </div>
-          <div className="bg-gray-900 p-4 rounded border border-gray-700">
-            <h2 className="text-xl font-semibold mb-4">BONDING - COMING SOON</h2>
-            <p>Linear Vesting Schedule: 7 Days</p>
-            <p>KARTEL/PESO Balance: --</p>
-            <p>Pending Rewards: 0 KARTEL ($0.00)</p>
-            <p>Claimable Rewards: 0 KARTEL ($0.00)</p>
-            <input type="text" placeholder="Enter LP amount" className="w-full mt-3 p-2 rounded bg-gray-800 border border-gray-600" />
-            <button className="mt-4 w-full bg-green-600 hover:bg-green-700 rounded py-2">CLAIM</button>
-            <a href="#" className="block mt-4 bg-green-700 hover:bg-green-800 text-white text-center py-2 rounded">
-              CREATE KARTEL/PESO LP ON UNISWAP
-            </a>
-          </div>
+
+        {/* TREASURY */}
+        <div className="bg-gray-900 p-4 rounded border border-gray-700 text-center">
+          <h2 className="text-xl font-bold mb-4">TREASURY {TREASURY}</h2>
+          <p>KARTEL/PESO LP: {lpT.data?.formatted}</p>
+          <p>KARTEL: {kartelT.data?.formatted}{formatUsd('KARTEL', kartelT.data?.formatted)}</p>
+          <p>USDC: {usdcT.data?.formatted}{formatUsd('USDC', usdcT.data?.formatted)}</p>
+          <p>PESO: {pesoT.data?.formatted}{formatUsd('PESO', pesoT.data?.formatted)}</p>
+        </div>
+
+        {/* STATS */}
+        <div className="bg-gray-900 p-4 rounded border border-gray-700 text-center">
+          <h2 className="text-xl font-bold mb-4">STATISTICS</h2>
+          <p>PESO Circulating Supply: {pesoSupply.toLocaleString()}</p>
+          <p>USDC Reserves: ${usdcReserves.toLocaleString()}</p>
+          <p>Backing Ratio: {backingRatio}</p>
+        </div>
+
+        {/* Footer Buttons */}
+        <div className="flex gap-4 justify-center mt-8">
+          <a href="https://stake.kartel.exchange" className="bg-green-700 hover:bg-green-800 px-4 py-2 rounded text-white">STAKING DAPP</a>
+          <a href="https://bond.kartel.exchange" className="bg-green-700 hover:bg-green-800 px-4 py-2 rounded text-white">BONDING DAPP</a>
         </div>
       </div>
     </div>
