@@ -103,6 +103,18 @@ const Dashboard = () => {
   const lpT = useBalance({ address: TREASURY, token: LP });
 
   useEffect(() => {
+    const fetchPrices = async () => {
+      try {
+        const res = await fetch("https://api.dexscreener.com/latest/dex/pairs/base/0x5e7dc4b68105b561e2397b7395fcbbe2a1fd29fe");
+        const data = await res.json();
+        const price = parseFloat(data?.pair?.priceUsd || 0);
+        setPrices({ KARTEL: price, PESO: 0.05, USDC: 1 });
+      } catch (err) {
+        console.error("Failed to fetch KARTEL price", err);
+      }
+    };
+    fetchPrices();
+    const priceInterval = setInterval(fetchPrices, 60000);
     const fetchStats = async () => {
       const apiKey = import.meta.env.VITE_BASESCAN_API_KEY;
       try {
@@ -119,7 +131,10 @@ const Dashboard = () => {
     };
     fetchStats();
     const interval = setInterval(fetchStats, 60000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearInterval(priceInterval);
+    };
   }, []);
 
   const formatUsd = (symbol, balance) => {
